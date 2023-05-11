@@ -1,6 +1,5 @@
-import java.security.KeyPair;
-import java.security.PrivateKey;
-import java.security.PublicKey;
+import java.security.*;
+import java.security.cert.Certificate;
 import java.util.Scanner;
 
 public class Main {
@@ -27,7 +26,7 @@ public class Main {
         //loadKeystore
         System.out.println("\nLectura del KeyStore");
 
-        KeyStore ks = Utilitats.loadKeyStore("/home/dam2a/mykeystore.jks", "usuari");
+        KeyStore ks = Utilitats.loadKeyStore("/home/dam2a/mykeystore2.jks", "usuario");
         System.out.println("Tipo de keystore: "+ ks.getType());
 
         int size = ks.size();

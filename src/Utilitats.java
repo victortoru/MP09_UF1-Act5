@@ -1,10 +1,11 @@
-import  javax.crypto.Cipher;
+import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.File;
 import java.io.FileInputStream;
 import java.security.*;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
@@ -114,7 +115,7 @@ public class Utilitats {
     }
 
     public static PublicKey getPublicKey(KeyStore ks, String alias, String pwMyKey) throws Exception {
-        Certificate cert = ks.getCertificate(alias);
+        Certificate cert = (Certificate) ks.getCertificate(alias);
         PublicKey publicKey = cert.getPublicKey();
         return publicKey;
     }
