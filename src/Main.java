@@ -8,7 +8,7 @@ import java.util.Enumeration;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         Scanner scanner = new Scanner(System.in);
         //Generem les claus
         System.out.println("Generar un parell de claus");
@@ -55,14 +55,14 @@ public class Main {
 
         System.out.println("\nNova Clau Simètrica");
 
-        SecretKey secretKey = Utilitats.keygenKeyGeneration(200);
+        SecretKey secretKey = Utilitats.keygenKeyGeneration(256);
 
         //Desem amb setEntry
         KeyStore.SecretKeyEntry secretKeyEntry = new KeyStore.SecretKeyEntry(secretKey);
         KeyStore.ProtectionParameter entryPassword = new KeyStore.PasswordProtection("usuario".toCharArray());
         ks.setEntry("mykeypair", secretKeyEntry, entryPassword);
 
-        ks.store(new FileOutputStream("/home/dam2a/mykeystore.jks"), "usuario".toCharArray());
+        ks.store(new FileOutputStream("/home/dam2a/mykeystore2.jks"), "usuario".toCharArray());
 
         System.out.println("\nRetorn de PublicKey");
 
@@ -99,6 +99,21 @@ public class Main {
             System.out.println("La firma NO es válida");
         }
 
+        System.out.println("\nClau Embolcallada");
+
+        KeyPair keyPair2 = Utilitats.randomGenerate(1024);
+        PublicKey publicKey2 = keyPair2.getPublic();
+        PrivateKey privateKey2 = keyPair2.getPrivate();
+
+        String textToEncrypt = "Realitzat amb èxit";
+        byte[] dataToEncrypt = textToEncrypt.getBytes();
+        byte[][] encryptedData = Utilitats.encryptWrappedData(dataToEncrypt, publicKey2);
+        byte[] decryptedData = Utilitats.decryptWrappedData(encryptedData, privateKey2);
+
+        String decryptedText = new String(decryptedData);
+
+        System.out.println("Text original: " + textToEncrypt);
+        System.out.println("Texto dsexifrat: " + decryptedText);
 
     }
 }
