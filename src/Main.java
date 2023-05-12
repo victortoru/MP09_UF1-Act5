@@ -1,5 +1,10 @@
+import javax.crypto.SecretKey;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.security.*;
 import java.security.cert.Certificate;
+import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.Scanner;
 
 public class Main {
@@ -27,25 +32,73 @@ public class Main {
         System.out.println("\nLectura del KeyStore");
 
         KeyStore ks = Utilitats.loadKeyStore("/home/dam2a/mykeystore2.jks", "usuario");
-        System.out.println("Tipo de keystore: "+ ks.getType());
+        System.out.println("Tipus de keystore: "+ ks.getType());
 
         int size = ks.size();
-        System.out.println("Tamaño del keystore: " + size);
+        System.out.println("Mida del keystore: " + size);
 
         Enumeration<String> aliases = ks.aliases();
         while (aliases.hasMoreElements()) {
             String alias = aliases.nextElement();
-            System.out.println("Alias de la clave: " + alias);
+            System.out.println("Àlies de la clau: " + alias);
         }
 
         String alias = "mykeypair";
         Certificate cert = ks.getCertificate(alias);
-        System.out.println("Certificado de la clave " + alias + ": " + cert.toString());
+        System.out.println("Certificat de la clau " + alias + ": " + cert.toString());
 
 
         String aliasClaves = "mykeypair";
         Key key = ks.getKey(aliasClaves, "usuario".toCharArray());
         String algorithm = key.getAlgorithm();
-        System.out.println("Algoritmo de cifrado de la clave " + aliasClaves + ": " + algorithm);
+        System.out.println("Algorisme de xifrat de la clau " + aliasClaves + ": " + algorithm);
+
+        System.out.println("\nNova Clau Simètrica");
+
+        SecretKey secretKey = Utilitats.keygenKeyGeneration(200);
+
+        //Desem amb setEntry
+        KeyStore.SecretKeyEntry secretKeyEntry = new KeyStore.SecretKeyEntry(secretKey);
+        KeyStore.ProtectionParameter entryPassword = new KeyStore.PasswordProtection("usuario".toCharArray());
+        ks.setEntry("mykeypair", secretKeyEntry, entryPassword);
+
+        ks.store(new FileOutputStream("/home/dam2a/mykeystore.jks"), "usuario".toCharArray());
+
+        System.out.println("\nRetorn de PublicKey");
+
+        PublicKey publicKeyCer = Utilitats.getPublicKey("/home/dam2a/my_signed_certificate.cer");
+        System.out.println("Valor: " + Arrays.toString(publicKeyCer.getEncoded()));
+        System.out.println("Algorisme: " + publicKeyCer.getAlgorithm());
+        System.out.println("Format: " + publicKeyCer.getFormat());
+
+        System.out.println("\nLectura de clau Asimètrica");
+
+        KeyStore ks4 = KeyStore.getInstance("PKCS12");
+        char[] password = "usuario".toCharArray();
+        ks4.load(new FileInputStream("/home/dam2a/mykeystore2.jks"), password);
+        PublicKey publicKey4 = Utilitats.getPublicKey(ks4, "mykeypair", "usuario");
+        System.out.println(publicKey4);
+
+        System.out.println("\nRetorn de la Signatura");
+
+        PrivateKey privateKey5 = Utilitats.getPrivateKeyFromKeystore();
+        byte[] data = "Aquí trobem les dades a signar".getBytes();
+        byte[] signature = Utilitats.signData(data, privateKey5);
+        System.out.println("Amb la signatura: " + new String(signature));
+
+        System.out.println("\nComprobació de la validesa");
+
+        PublicKey publicKey6 = Utilitats.getPublicKey(ks4, "mykeypair", "usuario");
+        byte[] signature6 =  Utilitats.signData(data, privateKey5);
+        byte[] data6 = "Mostrem les dades signades".getBytes();
+        boolean isValid = Utilitats.validateSignature(data6, signature6, publicKey6);
+
+        if (isValid) {
+            System.out.println("La firma es válida");
+        } else {
+            System.out.println("La firma NO es válida");
+        }
+
+
     }
 }
