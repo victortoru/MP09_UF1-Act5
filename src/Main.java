@@ -43,7 +43,7 @@ public class Main {
             System.out.println("Àlies de la clau: " + alias);
         }
 
-        String alias = "mykeypair";
+        String alias = "mykey";
         Certificate cert = ks.getCertificate(alias);
         System.out.println("Certificat de la clau " + alias + ": " + cert.toString());
 
@@ -76,7 +76,7 @@ public class Main {
         KeyStore ks4 = KeyStore.getInstance("PKCS12");
         char[] password = "usuario".toCharArray();
         ks4.load(new FileInputStream("/home/dam2a/mykeystore2.jks"), password);
-        PublicKey publicKey4 = Utilitats.getPublicKey(ks4, "mykeypair", "usuario");
+        PublicKey publicKey4 = Utilitats.getPublicKey(ks4, "mykey", "usuario");
         System.out.println(publicKey4);
 
         System.out.println("\nRetorn de la Signatura");
@@ -88,7 +88,7 @@ public class Main {
 
         System.out.println("\nComprobació de la validesa");
 
-        PublicKey publicKey6 = Utilitats.getPublicKey(ks4, "mykeypair", "usuario");
+        PublicKey publicKey6 = Utilitats.getPublicKey(ks4, "mykey", "usuario");
         byte[] signature6 =  Utilitats.signData(data, privateKey5);
         byte[] data6 = "Mostrem les dades signades".getBytes();
         boolean isValid = Utilitats.validateSignature(data6, signature6, publicKey6);
@@ -113,7 +113,7 @@ public class Main {
         String decryptedText = new String(decryptedData);
 
         System.out.println("Text original: " + textToEncrypt);
-        System.out.println("Texto dsexifrat: " + decryptedText);
+        System.out.println("Text desxifrat: " + decryptedText);
 
     }
 }

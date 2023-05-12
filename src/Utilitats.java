@@ -138,7 +138,7 @@ public class Utilitats {
         KeyStore ks = KeyStore.getInstance("PKCS12");
         char[] password = "usuario".toCharArray();
         ks.load(new FileInputStream("/home/dam2a/mykeystore2.jks"), password);
-        return (PrivateKey) ks.getKey("mykeypair", password);
+        return (PrivateKey) ks.getKey("mykey", password);
     }
 
     public static boolean validateSignature(byte[] data, byte[] signature, PublicKey pub) {
